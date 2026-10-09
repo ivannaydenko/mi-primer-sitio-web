@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Check-in - AerolineasLowCost</title>
+
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+    <div class="logo">
+        AerolineasLowCost
+    </div>
+
+
+    <nav>
+
+        <a href="index.html">
+            Buscar Vuelos
+        </a>
+
+        <a href="mis-viajes.html">
+            Mis Viajes
+        </a>
+
+        <a href="checkin.html">
+            Check-in
+        </a>
+
+        <a href="ayuda.html">
+            Ayuda
+        </a>
+
+        <a href="mi-cuenta.html">
+            Mi cuenta
+        </a>
+
+    </nav>
+
+
+    <div class="user-section">
+
+        <span id="user-name"></span>
+
+        <button id="btn-login">
+            Iniciar sesión
+        </button>
+
+        <button
+            id="btn-logout"
+            class="hidden"
+        >
+            Cerrar sesión
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="internal-page">
+
+    <div class="page-container">
+
+        <h1 class="page-title">
+            Check-in
+        </h1>
+
+        <p>
+            Consultá tus boletos y realizá el Check-in de tus vuelos.
+        </p>
+
+
+        <!--
+            JavaScript va a cargar acá
+            los boletos del usuario.
+        -->
+
+        <div id="boletos-list"></div>
+
+    </div>
+
+</main>
+
+
+<script src="check_in.js"></script>
+
+
+</body>
+
+</html>

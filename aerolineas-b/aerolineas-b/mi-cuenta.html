@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Mi cuenta - AerolineasLowCost</title>
+
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+    <div class="logo">
+        AerolineasLowCost
+    </div>
+
+
+    <nav>
+
+        <a href="index.html">
+            Buscar Vuelos
+        </a>
+
+        <a href="mis-viajes.html">
+            Mis Viajes
+        </a>
+
+        <a href="checkin.html">
+            Check-in
+        </a>
+
+        <a href="ayuda.html">
+            Ayuda
+        </a>
+
+        <a href="mi-cuenta.html">
+            Mi cuenta
+        </a>
+
+    </nav>
+
+
+    <div class="user-section">
+
+        <span id="user-name"></span>
+
+        <button
+            id="btn-logout"
+        >
+            Cerrar sesión
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="internal-page">
+
+    <div class="page-container">
+
+        <h1 class="page-title">
+            Mi cuenta
+        </h1>
+
+
+        <div class="account-card">
+
+
+            <!-- DATOS PERSONALES -->
+
+            <div class="account-section">
+
+                <h2>
+                    Mis datos
+                </h2>
+
+
+                <form id="datos-form">
+
+
+                    <div class="account-group">
+
+                        <label for="nombre">
+                            Nombre completo
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombre"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="account-group">
+
+                        <label for="email">
+                            Correo electrónico
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn-guardar"
+                    >
+                        Guardar datos
+                    </button>
+
+
+                    <p
+                        id="datos-message"
+                        class="account-message"
+                    ></p>
+
+                </form>
+
+            </div>
+
+
+            <!-- CONTRASEÑA -->
+
+            <div class="account-section">
+
+                <h2>
+                    Cambiar contraseña
+                </h2>
+
+
+                <form id="password-form">
+
+
+                    <div class="account-group">
+
+                        <label for="password-actual">
+                            Contraseña actual
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password-actual"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="account-group">
+
+                        <label for="password-nueva">
+                            Nueva contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password-nueva"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="account-group">
+
+                        <label for="password-confirmar">
+                            Confirmar nueva contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password-confirmar"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn-guardar"
+                    >
+                        Cambiar contraseña
+                    </button>
+
+
+                    <p
+                        id="password-message"
+                        class="account-message"
+                    ></p>
+
+                </form>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script src="mi_cuenta.js"></script>
+
+</body>
+
+</html>

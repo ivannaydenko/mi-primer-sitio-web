@@ -1,0 +1,693 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fa;
+    color: #333;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    height: 72px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 35px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    position: relative;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #1769aa;
+}
+
+.navbar nav {
+    display: flex;
+    gap: 22px;
+}
+
+.navbar nav a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.navbar nav a:hover {
+    color: #1769aa;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#user-name {
+    font-weight: bold;
+    color: #1769aa;
+}
+
+.user-section button {
+    border: none;
+    background: #1769aa;
+    color: white;
+    padding: 9px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.user-section button:hover {
+    background: #12558b;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    min-height: calc(100vh - 72px);
+
+    background:
+        linear-gradient(
+            rgba(0,0,0,0.42),
+            rgba(0,0,0,0.42)
+        ),
+        url('https://images.unsplash.com/photo-1711566827415-3ae04ca19a7b?auto=format&fit=crop&fm=jpg&q=85&w=2400')
+        no-repeat center center / cover;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.hero-content {
+    width: 100%;
+    max-width: 1050px;
+    text-align: center;
+    color: white;
+}
+
+.hero-content h1 {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.hero-content p {
+    font-size: 20px;
+    margin-bottom: 35px;
+}
+
+
+/* =========================
+   BUSCADOR
+========================= */
+
+.search-box {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    text-align: left;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    color: #333;
+    font-size: 13px;
+    margin-bottom: 7px;
+    font-weight: bold;
+}
+
+.input-group input {
+    height: 43px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0 10px;
+    font-size: 14px;
+}
+
+.btn-search {
+    grid-column: span 4;
+    height: 45px;
+    background: #1769aa;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-search:hover {
+    background: #12558b;
+}
+
+
+/* =========================
+   CUPÓN
+========================= */
+
+.coupon-box {
+    margin: 18px auto 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.coupon-box input {
+    padding: 10px;
+    width: 230px;
+    border: none;
+    border-radius: 5px;
+}
+
+.coupon-box button {
+    border: none;
+    background: #f5a623;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+/* =========================
+   RESULTADOS
+========================= */
+
+.results-section {
+    padding: 30px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+.flight-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.flight-card h3 {
+    color: #1769aa;
+    margin-bottom: 10px;
+}
+
+.flight-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.flight-time {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.flight-price {
+    font-size: 21px;
+    color: #1769aa;
+    font-weight: bold;
+}
+
+.btn-reservar {
+    background: #1769aa;
+    color: white;
+    border: none;
+    padding: 11px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-reservar:hover {
+    background: #12558b;
+}
+
+
+/* =========================
+   PÁGINAS INTERNAS
+========================= */
+
+.internal-page {
+    min-height: calc(100vh - 72px);
+    background: #f5f7fa;
+    padding: 40px 20px;
+}
+
+.page-container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.page-title {
+    color: #1769aa;
+    margin-bottom: 25px;
+    font-size: 32px;
+}
+
+
+/* =========================
+   VIAJES
+========================= */
+
+.travel-card {
+    background: white;
+    padding: 22px;
+    margin-bottom: 18px;
+    border-radius: 9px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.travel-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.travel-header h3 {
+    color: #1769aa;
+}
+
+.travel-info {
+    margin-top: 15px;
+    line-height: 1.8;
+}
+
+.travel-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.btn-eliminar {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    padding: 9px 13px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.btn-eliminar:hover {
+    background: #c53030;
+}
+
+
+/* =========================
+   ESTADOS
+========================= */
+
+.status {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.status-programado {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-realizado {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-checkin {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+
+/* =========================
+   CHECK-IN
+========================= */
+
+.ticket-card {
+    background: white;
+    border-radius: 9px;
+    padding: 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.ticket-card h3 {
+    color: #1769aa;
+}
+
+.ticket-info {
+    margin-top: 15px;
+    line-height: 1.8;
+}
+
+.ticket-actions {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-checkin {
+    background: #1769aa;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-checkin:hover {
+    background: #12558b;
+}
+
+.btn-consultar {
+    background: #718096;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-consultar:hover {
+    background: #4a5568;
+}
+
+.boleto-detalles {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f7fafc;
+    border-left: 4px solid #1769aa;
+}
+
+.pase-abordar {
+    margin-top: 18px;
+    padding: 20px;
+    background: #edf7ff;
+    border: 2px dashed #1769aa;
+    border-radius: 8px;
+}
+
+.pase-abordar h4 {
+    color: #1769aa;
+    margin-bottom: 10px;
+}
+
+
+/* =========================
+   ESTADO VACÍO
+========================= */
+
+.empty-state {
+    background: white;
+    padding: 40px;
+    text-align: center;
+    border-radius: 9px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.empty-state p {
+    margin-bottom: 20px;
+}
+
+.back-button {
+    display: inline-block;
+    text-decoration: none;
+    background: #1769aa;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 5px;
+}
+
+
+/* =========================
+   LOGIN / REGISTRO
+========================= */
+
+.auth-page {
+    min-height: 100vh;
+    background: #f5f7fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    padding: 35px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+}
+
+.auth-card h1 {
+    color: #1769aa;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.auth-group {
+    margin-bottom: 16px;
+}
+
+.auth-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.auth-group input {
+    width: 100%;
+    height: 42px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.auth-button {
+    width: 100%;
+    height: 44px;
+    background: #1769aa;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.auth-button:hover {
+    background: #12558b;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 18px;
+}
+
+.auth-link a {
+    color: #1769aa;
+    text-decoration: none;
+}
+
+
+/* =========================
+   MI CUENTA
+========================= */
+
+.account-card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 650px;
+    margin: auto;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.account-card h2 {
+    color: #1769aa;
+    margin-bottom: 20px;
+}
+
+.account-section {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+}
+
+.account-section:last-child {
+    border-bottom: none;
+}
+
+.account-section h3 {
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.account-group {
+    margin-bottom: 15px;
+}
+
+.account-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.account-group input {
+    width: 100%;
+    height: 42px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0 10px;
+}
+
+.btn-guardar {
+    background: #1769aa;
+    color: white;
+    border: none;
+    padding: 11px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-guardar:hover {
+    background: #12558b;
+}
+
+.account-message {
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+
+/* =========================
+   AYUDA
+========================= */
+
+.help-card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.help-card h2 {
+    color: #1769aa;
+    margin-bottom: 15px;
+}
+
+.help-card p {
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+
+    .navbar {
+        height: auto;
+        min-height: 72px;
+        flex-wrap: wrap;
+        padding: 15px;
+        gap: 12px;
+    }
+
+    .navbar nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .btn-search {
+        grid-column: span 2;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    .hero-content h1 {
+        font-size: 35px;
+    }
+
+    .hero-content p {
+        font-size: 17px;
+    }
+
+    .search-box {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-search {
+        grid-column: span 1;
+    }
+
+    .flight-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .travel-header {
+        flex-direction: column;
+    }
+
+    .travel-actions {
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    .navbar {
+        justify-content: center;
+    }
+
+    .user-section {
+        width: 100%;
+        justify-content: center;
+    }
+}

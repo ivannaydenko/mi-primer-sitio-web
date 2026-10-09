@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aerolíneas Low Cost - Buscar Vuelos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">AerolineasLowCost</div>
+
+    <nav>
+        <a href="index.html">Buscar Vuelos</a>
+        <a href="mis-viajes.html">Mis Viajes</a>
+        <a href="checkin.html">Check-in</a>
+        <a href="ayuda.html">Ayuda</a>
+        <a href="mi-cuenta.html">Mi cuenta</a>
+    </nav>
+
+    <div class="user-section">
+        <span id="user-name"></span>
+        <button id="btn-login">Iniciar sesión</button>
+        <button id="btn-logout" class="hidden">Cerrar sesión</button>
+    </div>
+</header>
+
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <h1>Buscá tu próximo vuelo</h1>
+
+        <p>Viajá por Argentina al mejor precio</p>
+
+        <form id="flight-form" class="search-box">
+
+            <div class="input-group">
+                <label>Origen</label>
+                <input
+                    type="text"
+                    id="origen"
+                    placeholder="Ciudad o Aeropuerto"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <label>Destino</label>
+                <input
+                    type="text"
+                    id="destino"
+                    placeholder="¿A dónde vas?"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <label>Fecha de salida</label>
+                <input
+                    type="date"
+                    id="fecha-salida"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <label>Fecha de regreso</label>
+                <input
+                    type="date"
+                    id="fecha-regreso"
+                >
+            </div>
+
+            <button type="submit" class="btn-search">
+                Buscar vuelos
+            </button>
+
+        </form>
+
+        <div class="coupon-box">
+            <input
+                type="text"
+                id="coupon-input"
+                placeholder="Código de descuento"
+            >
+
+            <button id="btn-apply-coupon">
+                Aplicar
+            </button>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="results-section">
+
+    <div id="results-container"></div>
+
+</section>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
