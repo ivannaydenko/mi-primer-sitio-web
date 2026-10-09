@@ -251,6 +251,17 @@ function reservarVuelo(
         return;
     }
 
+    const tarjeta =
+        JSON.parse(
+            localStorage.getItem(`tarjeta_${usuario}`) || "null"
+        );
+
+    if (!tarjeta) {
+        alert("Primero tenés que guardar una tarjeta en Mi cuenta antes de reservar.");
+        window.location.href = "mi-cuenta.html";
+        return;
+    }
+
     const codigo = generarCodigoReserva();
     const asiento = generarAsiento();
 
@@ -286,22 +297,23 @@ function reservarVuelo(
 
         checkin: false,
 
-        tarjetaEmbarque: null
+        tarjetaEmbarque: null,
+
+        metodoPago: "Tarjeta guardada",
+
+        tarjetaFinal: tarjeta.numero,
+
+        tarjetaTitular: tarjeta.titular
     };
 
 
-    // Obtener todas las reservas
     let reservas =
         JSON.parse(
             localStorage.getItem("reservas")
         ) || [];
 
-
-    // Agregar la nueva reserva
     reservas.push(reserva);
 
-
-    // Guardar
     localStorage.setItem(
         "reservas",
         JSON.stringify(reservas)
@@ -311,12 +323,12 @@ function reservarVuelo(
     alert(
         "¡Vuelo reservado correctamente!\n\n" +
         "Código de reserva: " + codigo +
-        "\nAsiento: " + asiento
+        "\nAsiento: " + asiento +
+        "\nPago: tarjeta terminada en " + tarjeta.numero
     );
 
 
-    window.location.href =
-        "mis-viajes.html";
+    window.location.href = "mis-viajes.html";
 }
 
 
