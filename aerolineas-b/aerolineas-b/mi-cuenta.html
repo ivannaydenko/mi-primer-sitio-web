@@ -217,6 +217,122 @@
             </div>
 
 
+            <!-- TARJETA DE CRÉDITO -->
+
+            <div class="account-section">
+
+                <h2>
+                    Tarjeta de crédito
+                </h2>
+
+
+                <div id="tarjeta-info" class="tarjeta-info">
+                    <p id="sin-tarjeta">No tenés una tarjeta registrada.</p>
+                </div>
+
+
+                <form id="tarjeta-form">
+
+
+                    <div class="account-group">
+
+                        <label for="titular">
+                            Nombre del titular
+                        </label>
+
+                        <input
+                            type="text"
+                            id="titular"
+                            placeholder="Como aparece en la tarjeta"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="account-group">
+
+                        <label for="numero-tarjeta">
+                            Número de tarjeta
+                        </label>
+
+                        <input
+                            type="text"
+                            id="numero-tarjeta"
+                            placeholder="0000 0000 0000 0000"
+                            maxlength="19"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="cuenta-row">
+
+                        <div class="account-group">
+
+                            <label for="vencimiento">
+                                Vencimiento (MM/AA)
+                            </label>
+
+                            <input
+                                type="text"
+                                id="vencimiento"
+                                placeholder="MM/AA"
+                                maxlength="5"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="account-group">
+
+                            <label for="cvv">
+                                CVV
+                            </label>
+
+                            <input
+                                type="text"
+                                id="cvv"
+                                placeholder="000"
+                                maxlength="4"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn-guardar"
+                    >
+                        Guardar tarjeta
+                    </button>
+
+
+                    <p
+                        id="tarjeta-message"
+                        class="account-message"
+                    ></p>
+
+                </form>
+
+
+                <button
+                    type="button"
+                    id="btn-eliminar-tarjeta"
+                    class="btn-eliminar"
+                    style="display: none; margin-top: 15px;"
+                >
+                    🗑️ Eliminar tarjeta
+                </button>
+
+
+            </div>
+
+
         </div>
 
     </div>
