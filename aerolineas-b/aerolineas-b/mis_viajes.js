@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "Hola, " + usuario;
 
     btnLogin.classList.add("hidden");
-
     btnLogout.classList.remove("hidden");
 
 
@@ -60,14 +59,12 @@ function mostrarViajes() {
         document.getElementById("viajes-list");
 
 
-    // Obtener todas las reservas
     let reservas =
         JSON.parse(
             localStorage.getItem("reservas")
         ) || [];
 
 
-    // Mostrar solamente las del usuario actual
     let viajes =
         reservas.filter(
             reserva =>
@@ -246,6 +243,12 @@ function mostrarViajes() {
                     $${Number(viaje.precio).toLocaleString("es-AR")}
                 </p>
 
+                <p>
+                    <strong>Pago:</strong>
+                    ${viaje.metodoPago || "Tarjeta guardada"}
+                    ${viaje.tarjetaFinal ? `- **** ${viaje.tarjetaFinal}` : ""}
+                </p>
+
             </div>
 
         `;
@@ -339,7 +342,8 @@ function formatearFecha(fecha) {
 
     const partes =
         fecha.split("-");
-            return (
+
+    return (
         partes[2] +
         "/" +
         partes[1] +
