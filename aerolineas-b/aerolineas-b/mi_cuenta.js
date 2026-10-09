@@ -57,6 +57,68 @@ document.addEventListener("DOMContentLoaded", () => {
             cambiarPassword
         );
 
+
+    const tarjetaForm =
+        document.getElementById("tarjeta-form");
+
+    if (tarjetaForm) {
+        tarjetaForm.addEventListener(
+            "submit",
+            guardarTarjeta
+        );
+    }
+
+
+    const btnEliminarTarjeta =
+        document.getElementById("btn-eliminar-tarjeta");
+
+    if (btnEliminarTarjeta) {
+        btnEliminarTarjeta.addEventListener(
+            "click",
+            eliminarTarjeta
+        );
+    }
+
+
+    const numeroInput =
+        document.getElementById("numero-tarjeta");
+
+    if (numeroInput) {
+        numeroInput.addEventListener(
+            "input",
+            formatearNumeroTarjeta
+        );
+    }
+
+
+    const vencimientoInput =
+        document.getElementById("vencimiento");
+
+    if (vencimientoInput) {
+        vencimientoInput.addEventListener(
+            "input",
+            formatearVencimiento
+        );
+    }
+
+
+    const cvvInput =
+        document.getElementById("cvv");
+
+    if (cvvInput) {
+        cvvInput.addEventListener(
+            "input",
+            () => {
+                cvvInput.value =
+                    cvvInput.value
+                        .replace(/\D/g, "")
+                        .slice(0, 4);
+            }
+        );
+    }
+
+
+    renderTarjeta();
 });
 
 
@@ -159,9 +221,6 @@ function guardarDatos(event) {
     }
 
 
-    /* Verificar si el nuevo correo
-       pertenece a otra cuenta */
-
     const correoExiste =
         usuarios.some(
             (u, i) =>
@@ -222,12 +281,6 @@ function guardarDatos(event) {
         JSON.stringify(usuarios)
     );
 
-
-    /*
-       Si cambia el nombre, también
-       trasladamos sus viajes y boletos
-       para que no los pierda.
-    */
 
     if (
         datosAntiguos.nombre !==
@@ -413,6 +466,240 @@ function cambiarPassword(event) {
 
 
 /* =========================
+   TARJETA DE CRÉDITO
+========================= */
+
+function formatearNumeroTarjeta() {
+
+    const input =
+        document.getElementById("numero-tarjeta");
+
+    if (!input) {
+        return;
+    }
+
+    const valor =
+        input.value
+            .replace(/\D/g, "")
+            .slice(0, 16);
+
+    input.value =
+        valor
+            .replace(/(\d{4})(?=\d)/g, "$1 ")
+            .trim();
+}
+
+
+function formatearVencimiento() {
+
+    const input =
+        document.getElementById("vencimiento");
+
+    if (!input) {
+        return;
+    }
+
+    let valor =
+        input.value
+            .replace(/\D/g, "")
+            .slice(0, 4);
+
+    if (valor.length > 2) {
+        valor =
+            valor.slice(0, 2) +
+            "/" +
+            valor.slice(2);
+    }
+
+    input.value = valor;
+}
+
+
+function guardarTarjeta(event) {
+
+    event.preventDefault();
+
+    const usuario =
+        localStorage.getItem("usuarioLogueado");
+
+    if (!usuario) {
+        return;
+    }
+
+    const titular =
+        document
+            .getElementById("titular")
+            .value
+            .trim();
+
+    const numero =
+        document
+            .getElementById("numero-tarjeta")
+            .value
+            .replace(/\s+/g, "")
+            .trim();
+
+    const vencimiento =
+        document
+            .getElementById("vencimiento")
+            .value
+            .trim();
+
+    const cvv =
+        document
+            .getElementById("cvv")
+            .value
+            .trim();
+
+    const mensaje =
+        document.getElementById("tarjeta-message");
+
+    if (!titular || !numero || !vencimiento || !cvv) {
+        mensaje.textContent =
+            "Completá todos los campos de la tarjeta.";
+        mensaje.style.color = "#b91c1c";
+        return;
+    }
+
+    if (!/^\d{16}$/.test(numero)) {
+        mensaje.textContent =
+            "El número de tarjeta debe tener 16 dígitos.";
+        mensaje.style.color = "#b91c1c";
+        return;
+    }
+
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(vencimiento)) {
+        mensaje.textContent =
+            "El vencimiento debe tener formato MM/AA.";
+        mensaje.style.color = "#b91c1c";
+        return;
+    }
+
+    if (!/^\d{3,4}$/.test(cvv)) {
+        mensaje.textContent =
+            "El CVV debe tener 3 o 4 dígitos.";
+        mensaje.style.color = "#b91c1c";
+        return;
+    }
+
+    const tarjeta = {
+        titular: titular,
+        numero: numero.slice(-4),
+        vencimiento: vencimiento
+    };
+
+    localStorage.setItem(
+        `tarjeta_${usuario}`,
+        JSON.stringify(tarjeta)
+    );
+
+    mensaje.textContent =
+        "✓ Tarjeta guardada correctamente.";
+    mensaje.style.color = "#15803d";
+
+    document
+        .getElementById("tarjeta-form")
+        .reset();
+
+    renderTarjeta();
+}
+
+
+function renderTarjeta() {
+
+    const usuario =
+        localStorage.getItem("usuarioLogueado");
+
+    const tarjetaInfo =
+        document.getElementById("tarjeta-info");
+
+    const btnEliminar =
+        document.getElementById("btn-eliminar-tarjeta");
+
+    if (!tarjetaInfo || !btnEliminar) {
+        return;
+    }
+
+    const tarjeta =
+        JSON.parse(
+            localStorage.getItem(
+                `tarjeta_${usuario}`
+            ) || "null"
+        );
+
+    if (!tarjeta) {
+        tarjetaInfo.innerHTML =
+            "<p id='sin-tarjeta'>No tenés una tarjeta registrada.</p>";
+        btnEliminar.style.display = "none";
+        return;
+    }
+
+    tarjetaInfo.innerHTML = `
+        <div class="tarjeta-card">
+            <div class="tarjeta-chip"></div>
+            <div class="tarjeta-numero">
+                •••• •••• •••• ${tarjeta.numero}
+            </div>
+            <div class="tarjeta-row">
+                <div>
+                    <small>Titular</small>
+                    <strong>${escapeHtml(tarjeta.titular)}</strong>
+                </div>
+                <div>
+                    <small>Vence</small>
+                    <strong>${tarjeta.vencimiento}</strong>
+                </div>
+            </div>
+        </div>
+    `;
+
+    btnEliminar.style.display = "inline-block";
+}
+
+
+function eliminarTarjeta() {
+
+    const usuario =
+        localStorage.getItem("usuarioLogueado");
+
+    const confirmar =
+        confirm(
+            "¿Seguro que querés eliminar tu tarjeta guardada?"
+        );
+
+    if (!confirmar) {
+        return;
+    }
+
+    localStorage.removeItem(
+        `tarjeta_${usuario}`
+    );
+
+    const mensaje =
+        document.getElementById("tarjeta-message");
+
+    if (mensaje) {
+        mensaje.textContent =
+            "✓ Tarjeta eliminada.";
+        mensaje.style.color = "#15803d";
+    }
+
+    renderTarjeta();
+}
+
+
+function escapeHtml(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================
    MIGRAR VIAJES
 ========================= */
 
@@ -463,7 +750,6 @@ function migrarDatosUsuario(
 
         });
 
-
     const boletosActualizados =
         boletos.map(boleto => {
 
@@ -485,7 +771,6 @@ function migrarDatosUsuario(
             return boleto;
 
         });
-
 
     localStorage.setItem(
         claveNuevoViajes,
