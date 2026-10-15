@@ -1,120 +1,79 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const form =
-        document.getElementById("login-form");
-
+    const form = document.getElementById("login-form");
+    if (!form) return;
 
     form.addEventListener("submit", async (event) => {
-
         event.preventDefault();
 
+        const email = document.getElementById("email").value.trim().toLowerCase();
+        const password = document.getElementById("password").value;
 
-        const email =
-            document
-                .getElementById("email")
-                .value
-                .trim()
-                .toLowerCase();
+        // Primero intentamos con los usuarios locales (compatibilidad)
+        const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+        const usuarioLocal = usuarios.find(u => u.email.toLowerCase() === email && u.password === password);
 
+        const API = "http://localhost:3000/api";
 
-        const password =
-            document
-                .getElementById("password")
-                .value;
+        if (usuarioLocal) {
+            // Iniciamos sesión localmente
+            localStorage.setItem("usuarioLogueado", usuarioLocal.nombre);
 
-
-        // Primero intentamos con los usuarios locales (para compatibilidad)
-        const usuarios =
-            JSON.parse(
-                localStorage.getItem("usuarios")
-            ) || [];
-
-
-        const usuario =
-            usuarios.find(
-                u =>
-                    u.email.toLowerCase() === email &&
-                    u.password === password
-            );
-
-
-        // Si no está en localStorage, intentamos login demo contra la API (sin contraseña)
-        if (!usuario) {
-
+            // Intentamos sincronizar/obtener pasajeroId desde el backend (no bloqueante)
             try {
-                const API = "http://localhost:3000/api";
-
-                const nombreGuess = email.includes("@") ? email.split("@")[0] : email;
-
                 const res = await fetch(`${API}/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ nombre: nombreGuess, email })
+                    body: JSON.stringify({ email, password })
                 });
 
                 if (res.ok) {
-                    const user = await res.json();
+                    const data = await res.json();
+                    // aceptar distintos nombres de campo que pueda devolver el backend
+                    const id = data.pasajeroId || data.IdPasajero || data.id;
+                    const nombre = data.nombre || data.Nombre || usuarioLocal.nombre;
 
-                    localStorage.setItem(
-                        "usuarioLogueado",
-                        user.Nombre
-                    );
-
-                    localStorage.setItem(
-                        "pasajeroId",
-                        user.IdPasajero
-                    );
-
-                    alert("¡Bienvenido/a " + user.Nombre + "!");
-                    window.location.href = "index.html";
-                    return;
+                    if (id) localStorage.setItem("pasajeroId", id);
+                    if (nombre) localStorage.setItem("usuarioLogueado", nombre);
                 }
-
             } catch (err) {
-                console.error(err);
+                console.warn("No se pudo sincronizar con backend:", err);
             }
 
-            alert(
-                "Correo o contraseña incorrectos."
-            );
-
+            alert("¡Bienvenido/a " + usuarioLocal.nombre + "!");
+            window.location.href = "index.html";
             return;
         }
 
-
-        // Si está en localStorage, iniciamos sesión local y sincronizamos con la API (crea pasajero si hace falta)
-        localStorage.setItem(
-            "usuarioLogueado",
-            usuario.nombre
-        );
-
+        // Si no está en localStorage, intentamos autenticar contra el backend
         try {
-            const API = "http://localhost:3000/api";
-
             const res = await fetch(`${API}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nombre: usuario.nombre, email: usuario.email })
+                body: JSON.stringify({ email, password })
             });
 
             if (res.ok) {
-                const u = await res.json();
-                localStorage.setItem("pasajeroId", u.IdPasajero);
+                const data = await res.json();
+                const id = data.pasajeroId || data.IdPasajero || data.id;
+                const nombre = data.nombre || data.Nombre || (email.includes("@") ? email.split("@")[0] : email);
+
+                localStorage.setItem("usuarioLogueado", nombre);
+                if (id) localStorage.setItem("pasajeroId", id);
+
+                alert("¡Bienvenido/a " + nombre + "!");
+                window.location.href = "index.html";
+                return;
             }
+
+            // error del servidor -> mostrar mensaje si viene
+            const errBody = await res.json().catch(() => null);
+            const msg = (errBody && (errBody.error || errBody.message)) || "Correo o contraseña incorrectos.";
+            alert(msg);
         } catch (err) {
             console.error(err);
+            alert("No se pudo conectar con el servidor de autenticación. Revisa que el backend esté corriendo.");
         }
-
-
-        alert(
-            "¡Bienvenido/a " +
-            usuario.nombre +
-            "!"
-        );
-
-
-        window.location.href =
-            "index.html";
     });
 
 });
