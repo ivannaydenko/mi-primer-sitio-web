@@ -1,727 +1,168 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const usuario = localStorage.getItem("usuarioLogueado");
+  const userName = document.getElementById("user-name");
+  const btnLogin = document.getElementById("btn-login");
+  const btnLogout = document.getElementById("btn-logout");
+  const lista = document.getElementById("boletos-list");
 
-    const usuario =
-        localStorage.getItem("usuarioLogueado");
+  if (!usuario) {
+    alert("Debés iniciar sesión para consultar tus boletos.");
+    window.location.href = "login.html";
+    return;
+  }
 
-    const lista =
-        document.getElementById("boletos-list");
+  userName.textContent = `Hola, ${usuario}`;
+  if (btnLogin) btnLogin.style.display = "none";
+  if (btnLogout) btnLogout.style.display = "inline-block";
 
-    const userName =
-        document.getElementById("user-name");
+  if (btnLogin) btnLogin.addEventListener("click", () => window.location.href = "login.html");
+  if (btnLogout) btnLogout.addEventListener("click", () => { localStorage.removeItem("usuarioLogueado"); window.location.href = "index.html"; });
 
-    const btnLogin =
-        document.getElementById("btn-login");
+  mostrarBoletos();
 
-    const btnLogout =
-        document.getElementById("btn-logout");
+  function obtenerFechaActual() {
+    const ahora = new Date();
+    const año = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+    const dia = String(ahora.getDate()).padStart(2, "0");
+    return `${año}-${mes}-${dia}`;
+  }
 
+  function formatearFecha(fecha) {
+    if (!fecha) return "-";
+    const partes = fecha.split("-");
+    return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : fecha;
+  }
 
-    // ==========================================
-    // VERIFICAR SESIÓN
-    // ==========================================
+  function generarTarjetaEmbarque(boleto) {
+    return {
+      numero: "PB-" + Math.floor(100000 + Math.random() * 900000),
+      codigo: boleto.codigo,
+      pasajero: boleto.pasajero,
+      vuelo: boleto.vuelo,
+      origen: boleto.origen,
+      destino: boleto.destino,
+      fecha: boleto.fecha || formatearFecha(boleto.fechaSalida),
+      hora: boleto.horaSalida || "-",
+      asiento: boleto.asiento
+    };
+  }
 
-    if (!usuario) {
+  function obtenerReservas() {
+    return JSON.parse(localStorage.getItem("reservas") || "[]");
+  }
 
-        alert(
-            "Debes iniciar sesión para consultar tus boletos."
-        );
+  function guardarReservas(reservas) {
+    localStorage.setItem("reservas", JSON.stringify(reservas));
+  }
 
-        window.location.href =
-            "login.html";
+  function mostrarBoletos() {
+    const reservas = obtenerReservas();
+    const hoy = obtenerFechaActual();
+    // Filtrar reservas del usuario
+    const boletos = reservas.filter(r => r.pasajero === usuario);
+    // Vigentes
+    const vigentes = boletos.filter(b => !b.fechaSalida || b.fechaSalida >= hoy);
 
-        return;
+    lista.innerHTML = "";
+
+    if (vigentes.length === 0) {
+      lista.innerHTML = `
+        <div class="empty-state">
+          <h3>No tenés boletos vigentes</h3>
+          <p>Cuando compres un vuelo, podrás realizar el check-in desde aquí.</p>
+          <a class="back-button" href="index.html">Buscar vuelos</a>
+        </div>
+      `;
+      return;
     }
 
+    vigentes
+      .slice()
+      .sort((a, b) => (a.fechaSalida || "") .localeCompare(b.fechaSalida || ""))
+      .forEach(boleto => {
+        const div = document.createElement("article");
+        div.className = "ticket-card";
+        const yaCheckin = boleto.checkin === true;
 
-    userName.textContent =
-        `Hola, ${usuario}`;
+        div.innerHTML = `
+          <div class="ticket-main">
+            <h3>Vuelo ${boleto.vuelo}</h3>
+            <p><strong>${boleto.origen}</strong> → <strong>${boleto.destino}</strong></p>
+            <p><strong>Fecha:</strong> ${boleto.fecha || formatearFecha(boleto.fechaSalida)}</p>
+            <p><strong>Código:</strong> ${boleto.codigo}</p>
 
-    btnLogin.style.display =
-        "none";
+            <div class="boleto-detalles" style="display:none;">
+              <p><strong>Pasajero:</strong> ${boleto.pasajero}</p>
+              <p><strong>Salida:</strong> ${boleto.horaSalida || "-"}</p>
+              <p><strong>Llegada:</strong> ${boleto.horaLlegada || "-"}</p>
+              <p><strong>Asiento:</strong> ${boleto.asiento}</p>
+              <p><strong>Precio:</strong> $${Number(boleto.precio || 0).toLocaleString("es-AR")}</p>
+              ${boleto.fechaRegreso ? `<p><strong>Regreso:</strong> ${formatearFecha(boleto.fechaRegreso)}</p>` : ""}
+              ${boleto.metodoPago ? `<p><strong>Pago:</strong> ${boleto.metodoPago} ${boleto.tarjetaFinal ? ` - **** ${boleto.tarjetaFinal}` : ""}</p>` : ""}
+            </div>
 
-    btnLogout.style.display =
-        "inline-block";
+            ${yaCheckin && boleto.tarjetaEmbarque ? `
+              <div class="pase-abordar">
+                <h4>Tarjeta de embarque</h4>
+                <p><strong>Pasajero:</strong> ${boleto.tarjetaEmbarque.pasajero}</p>
+                <p><strong>Vuelo:</strong> ${boleto.tarjetaEmbarque.vuelo}</p>
+                <p><strong>Ruta:</strong> ${boleto.tarjetaEmbarque.origen} → ${boleto.tarjetaEmbarque.destino}</p>
+                <p><strong>Fecha:</strong> ${boleto.tarjetaEmbarque.fecha}</p>
+                <p><strong>Hora:</strong> ${boleto.tarjetaEmbarque.hora}</p>
+                <p><strong>Asiento:</strong> ${boleto.tarjetaEmbarque.asiento}</p>
+                <p class="pase-codigo">Pase: ${boleto.tarjetaEmbarque.numero}</p>
+              </div>
+            ` : ""}
+          </div>
 
+          <div class="ticket-actions">
+            <button class="btn-consultar" type="button">Consultar boleto</button>
+            ${yaCheckin ? `<span class="status status-checkin">Check-in realizado</span>` : `<button class="btn-checkin" type="button">Realizar Check-in</button>`}
+          </div>
+        `;
 
-    btnLogin.addEventListener(
-        "click",
-        () => {
+        // toggle details
+        const detalles = div.querySelector(".boleto-detalles");
+        const consultar = div.querySelector(".btn-consultar");
+        consultar.addEventListener("click", () => {
+          const visible = detalles.style.display !== "none";
+          detalles.style.display = visible ? "none" : "block";
+          consultar.textContent = visible ? "Consultar boleto" : "Ocultar boleto";
+        });
 
-            window.location.href =
-                "login.html";
-
-        }
-    );
-
-
-    btnLogout.addEventListener(
-        "click",
-        () => {
-
-            localStorage.removeItem(
-                "usuarioLogueado"
-            );
-
-            window.location.href =
-                "index.html";
-
-        }
-    );
-
-
-    // ==========================================
-    // FECHA ACTUAL
-    // ==========================================
-
-    function obtenerFechaActual() {
-
-        const ahora =
-            new Date();
-
-        const año =
-            ahora.getFullYear();
-
-        const mes =
-            String(
-                ahora.getMonth() + 1
-            ).padStart(2, "0");
-
-        const dia =
-            String(
-                ahora.getDate()
-            ).padStart(2, "0");
-
-        return `${año}-${mes}-${dia}`;
-
-    }
-
-
-    // ==========================================
-    // FORMATEAR FECHA
-    // ==========================================
-
-    function formatearFecha(fecha) {
-
-        if (!fecha) {
-            return "-";
-        }
-
-        const partes =
-            fecha.split("-");
-
-        return partes.length === 3
-            ? `${partes[2]}/${partes[1]}/${partes[0]}`
-            : fecha;
-
-    }
-
-
-    // ==========================================
-    // OBTENER BOLETOS
-    // ==========================================
-
-    function obtenerBoletos() {
-
-        return (
-            JSON.parse(
-                localStorage.getItem(
-                    "boletos_" + usuario
-                )
-            ) || []
-        );
-
-    }
-
-
-    // ==========================================
-    // GUARDAR BOLETOS
-    // ==========================================
-
-    function guardarBoletos(boletos) {
-
-        localStorage.setItem(
-            "boletos_" + usuario,
-            JSON.stringify(boletos)
-        );
-
-    }
-
-
-    // ==========================================
-    // ACTUALIZAR MIS VIAJES
-    // ==========================================
-
-    function actualizarViaje(boleto) {
-
-        const clave =
-            "viajes_" + usuario;
-
-        const viajes =
-            JSON.parse(
-                localStorage.getItem(clave)
-            ) || [];
-
-
-        const viaje =
-            viajes.find(
-                v =>
-                    v.codigo ===
-                    boleto.codigo
-            );
-
-
-        if (viaje) {
-
-            viaje.checkin =
-                boleto.checkin;
-
-            viaje.estado =
-                boleto.estado;
-
-            viaje.tarjetaEmbarque =
-                boleto.tarjetaEmbarque ||
-                null;
-
-
-            localStorage.setItem(
-                clave,
-                JSON.stringify(viajes)
-            );
-
+        const botonCheckin = div.querySelector(".btn-checkin");
+        if (botonCheckin) {
+          botonCheckin.addEventListener("click", () => realizarCheckin(boleto.codigo));
         }
 
+        lista.appendChild(div);
+      });
+  }
+
+  function realizarCheckin(codigo) {
+    const reservas = obtenerReservas();
+    const idx = reservas.findIndex(r => r.codigo === codigo && r.pasajero === usuario);
+    if (idx === -1) { alert("No se encontró la reserva."); return; }
+
+    const boleto = reservas[idx];
+    if (boleto.fechaSalida && boleto.fechaSalida < obtenerFechaActual()) {
+      alert("Este vuelo ya pasó y no se puede realizar el Check-in.");
+      mostrarBoletos();
+      return;
     }
 
+    boleto.checkin = true;
+    boleto.estado = "Check-in realizado";
+    boleto.tarjetaEmbarque = generarTarjetaEmbarque(boleto);
 
-    // ==========================================
-    // GENERAR PASE DE ABORDAR
-    // ==========================================
+    reservas[idx] = boleto;
+    guardarReservas(reservas);
 
-    function generarTarjetaEmbarque(boleto) {
+    // también actualizar mis-viajes si lo muestra desde la misma fuente (reservas)
 
-        return {
-
-            numero:
-                "PB-" +
-                Math.floor(
-                    100000 +
-                    Math.random() * 900000
-                ),
-
-            codigo:
-                boleto.codigo,
-
-            pasajero:
-                boleto.pasajero,
-
-            vuelo:
-                boleto.vuelo,
-
-            origen:
-                boleto.origen,
-
-            destino:
-                boleto.destino,
-
-            fecha:
-                boleto.fecha,
-
-            hora:
-                boleto.horaSalida || "-",
-
-            asiento:
-                boleto.asiento
-
-        };
-
-    }
-
-
-    // ==========================================
-    // MOSTRAR BOLETOS
-    // ==========================================
-
-    function mostrarBoletos() {
-
-        const boletos =
-            obtenerBoletos();
-
-        const hoy =
-            obtenerFechaActual();
-
-
-        // Solamente boletos que todavía no caducaron
-
-        const vigentes =
-            boletos.filter(
-                boleto =>
-                    boleto.fechaSalida >= hoy
-            );
-
-
-        lista.innerHTML = "";
-
-
-        // ======================================
-        // NO HAY BOLETOS
-        // ======================================
-
-        if (vigentes.length === 0) {
-
-            lista.innerHTML = `
-
-                <div class="empty-state">
-
-                    <h3>
-                        No tienes boletos vigentes
-                    </h3>
-
-                    <p>
-                        Cuando compres un vuelo,
-                        podrás consultar el boleto
-                        y realizar el Check-in desde aquí.
-                    </p>
-
-                    <a
-                        class="back-button"
-                        href="index.html"
-                    >
-                        Buscar vuelos
-                    </a>
-
-                </div>
-
-            `;
-
-            return;
-        }
-
-
-        // ======================================
-        // ORDENAR POR FECHA
-        // ======================================
-
-        vigentes
-            .slice()
-            .sort(
-                (a, b) =>
-                    a.fechaSalida.localeCompare(
-                        b.fechaSalida
-                    )
-            )
-            .forEach(
-                boleto => {
-
-                    const div =
-                        document.createElement(
-                            "article"
-                        );
-
-
-                    div.className =
-                        "ticket-card";
-
-
-                    const yaCheckin =
-                        boleto.checkin === true;
-
-
-                    // ==================================
-                    // TARJETA DEL BOLETO
-                    // ==================================
-
-                    div.innerHTML = `
-
-                        <div class="ticket-main">
-
-                            <h3>
-                                 Vuelo ${boleto.vuelo}
-                            </h3>
-
-
-                            <p>
-                                <strong>
-                                    ${boleto.origen}
-                                </strong>
-
-                                →
-
-                                <strong>
-                                    ${boleto.destino}
-                                </strong>
-                            </p>
-
-
-                            <p>
-                                <strong>
-                                    Fecha:
-                                </strong>
-
-                                ${
-                                    boleto.fecha ||
-                                    formatearFecha(
-                                        boleto.fechaSalida
-                                    )
-                                }
-                            </p>
-
-
-                            <p>
-                                <strong>
-                                    Código:
-                                </strong>
-
-                                ${boleto.codigo}
-                            </p>
-
-
-                            <!-- DETALLES DEL BOLETO -->
-
-                            <div
-                                class="boleto-detalles"
-                                style="display:none;"
-                            >
-
-                                <p>
-                                    <strong>
-                                        Pasajero:
-                                    </strong>
-
-                                    ${boleto.pasajero}
-                                </p>
-
-
-                                <p>
-                                    <strong>
-                                        Salida:
-                                    </strong>
-
-                                    ${boleto.horaSalida || "-"}
-                                </p>
-
-
-                                <p>
-                                    <strong>
-                                        Llegada:
-                                    </strong>
-
-                                    ${boleto.horaLlegada || "-"}
-                                </p>
-
-
-                                <p>
-                                    <strong>
-                                        Asiento:
-                                    </strong>
-
-                                    ${boleto.asiento}
-                                </p>
-
-
-                                <p>
-                                    <strong>
-                                        Precio:
-                                    </strong>
-
-                                    $${Number(
-                                        boleto.precio
-                                    ).toLocaleString(
-                                        "es-AR"
-                                    )}
-                                </p>
-
-
-                                ${
-                                    boleto.fechaRegreso
-                                        ? `
-                                            <p>
-                                                <strong>
-                                                    Regreso:
-                                                </strong>
-
-                                                ${formatearFecha(
-                                                    boleto.fechaRegreso
-                                                )}
-                                            </p>
-                                        `
-                                        : ""
-                                }
-
-                            </div>
-
-
-                            ${
-                                yaCheckin &&
-                                boleto.tarjetaEmbarque
-                                    ? `
-
-                                    <div class="pase-abordar">
-
-                                        <h3>
-                                             Tarjeta de embarque
-                                        </h3>
-
-
-                                        <p>
-                                            <strong>
-                                                Pasajero:
-                                            </strong>
-
-                                            ${boleto.tarjetaEmbarque.pasajero}
-                                        </p>
-
-
-                                        <p>
-                                            <strong>
-                                                Vuelo:
-                                            </strong>
-
-                                            ${boleto.tarjetaEmbarque.vuelo}
-                                        </p>
-
-
-                                        <p>
-                                            <strong>
-                                                Ruta:
-                                            </strong>
-
-                                            ${boleto.tarjetaEmbarque.origen}
-                                            →
-                                            ${boleto.tarjetaEmbarque.destino}
-                                        </p>
-
-
-                                        <p>
-                                            <strong>
-                                                Fecha:
-                                            </strong>
-
-                                            ${boleto.tarjetaEmbarque.fecha}
-                                        </p>
-
-
-                                        <p>
-                                            <strong>
-                                                Hora:
-                                            </strong>
-
-                                            ${boleto.tarjetaEmbarque.hora}
-                                        </p>
-
-
-                                        <p>
-                                            <strong>
-                                                Asiento:
-                                            </strong>
-
-                                            ${boleto.tarjetaEmbarque.asiento}
-                                        </p>
-
-
-                                        <p class="pase-codigo">
-                                            Pase:
-                                            ${boleto.tarjetaEmbarque.numero}
-                                        </p>
-
-                                    </div>
-
-                                `
-                                : ""
-                            }
-
-                        </div>
-
-
-                        <div class="ticket-actions">
-
-                            <button
-                                class="btn-consultar"
-                                type="button"
-                            >
-                                Consultar boleto
-                            </button>
-
-
-                            ${
-                                yaCheckin
-
-                                    ? `
-
-                                        <span
-                                            class="status completed"
-                                        >
-                                            Check-in realizado
-                                        </span>
-
-                                    `
-
-                                    : `
-
-                                        <button
-                                            class="btn-checkin"
-                                            type="button"
-                                        >
-                                            Realizar Check-in
-                                        </button>
-
-                                    `
-                            }
-
-                        </div>
-
-                    `;
-
-
-                    // ==================================
-                    // CONSULTAR BOLETO
-                    // ==================================
-
-                    const detalles =
-                        div.querySelector(
-                            ".boleto-detalles"
-                        );
-
-
-                    const consultar =
-                        div.querySelector(
-                            ".btn-consultar"
-                        );
-
-
-                    consultar.addEventListener(
-                        "click",
-                        () => {
-
-                            const visible =
-                                detalles.style.display !==
-                                "none";
-
-
-                            detalles.style.display =
-                                visible
-                                    ? "none"
-                                    : "block";
-
-
-                            consultar.textContent =
-                                visible
-                                    ? "Consultar boleto"
-                                    : "Ocultar boleto";
-
-                        }
-                    );
-
-
-                    // ==================================
-                    // CHECK-IN
-                    // ==================================
-
-                    const botonCheckin =
-                        div.querySelector(
-                            ".btn-checkin"
-                        );
-
-
-                    if (botonCheckin) {
-
-                        botonCheckin.addEventListener(
-                            "click",
-                            () => {
-
-                                const boletosActualizados =
-                                    obtenerBoletos();
-
-
-                                const boletoActual =
-                                    boletosActualizados.find(
-                                        b =>
-                                            b.codigo ===
-                                            boleto.codigo
-                                    );
-
-
-                                if (!boletoActual) {
-                                    return;
-                                }
-
-
-                                // Verificar que no haya caducado
-
-                                if (
-                                    boletoActual.fechaSalida <
-                                    obtenerFechaActual()
-                                ) {
-
-                                    alert(
-                                        "Este vuelo ya pasó y no se puede realizar el Check-in."
-                                    );
-
-                                    mostrarBoletos();
-
-                                    return;
-                                }
-
-
-                                // ==================================
-                                // REALIZAR CHECK-IN
-                                // ==================================
-
-                                boletoActual.checkin =
-                                    true;
-
-
-                                boletoActual.estado =
-                                    "Check-in realizado";
-
-
-                                boletoActual.tarjetaEmbarque =
-                                    generarTarjetaEmbarque(
-                                        boletoActual
-                                    );
-
-
-                                // Guardar boleto
-
-                                guardarBoletos(
-                                    boletosActualizados
-                                );
-
-
-                                // Actualizar Mis Viajes
-
-                                actualizarViaje(
-                                    boletoActual
-                                );
-
-
-                                alert(
-                                    "Check-in realizado correctamente.\n\n" +
-                                    "Tu tarjeta de embarque ya está disponible."
-                                );
-
-
-                                mostrarBoletos();
-
-                            }
-                        );
-
-                    }
-
-
-                    lista.appendChild(
-                        div
-                    );
-
-                }
-            );
-
-    }
-
-
-    // ==========================================
-    // INICIAR
-    // ==========================================
-
+    alert("Check-in realizado correctamente. Tu tarjeta de embarque ya está disponible.");
     mostrarBoletos();
+  }
 
 });
